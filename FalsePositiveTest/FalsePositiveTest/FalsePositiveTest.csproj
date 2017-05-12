@@ -33,16 +33,16 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="NBitcoin, Version=3.0.2.15, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NBitcoin.3.0.2.15\lib\net45\NBitcoin.dll</HintPath>
+    <Reference Include="NBitcoin, Version=3.0.2.23, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NBitcoin.3.0.2.23\lib\net45\NBitcoin.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="QBitNinja.Client, Version=1.0.3.38, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\QBitNinja.Client.1.0.3.38\lib\net45\QBitNinja.Client.dll</HintPath>
+      <HintPath>..\..\packages\QBitNinja.Client.1.0.3.38\lib\net45\QBitNinja.Client.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
