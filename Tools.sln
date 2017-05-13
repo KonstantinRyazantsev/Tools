@@ -7,6 +7,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FalsePositiveTest", "FalseP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionDownloader", "zcash\TransactionDownloader\TransactionDownloader\TransactionDownloader.csproj", "{3562F2CA-F95B-4C4F-9EA7-601A16DA0A20}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "zcash", "zcash", "{4EF8CFDD-78C7-4DEC-8C56-C826472F389F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TransactionInspector", "zcash\TransactionInspector\TransactionInspector.csproj", "{392D0651-AD51-4E0B-BD1C-279015620C4B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "zcash\Common\Common.csproj", "{C6A7EF11-AFB7-4055-A38C-921EEA945070}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,8 +27,21 @@ Global
 		{3562F2CA-F95B-4C4F-9EA7-601A16DA0A20}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3562F2CA-F95B-4C4F-9EA7-601A16DA0A20}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3562F2CA-F95B-4C4F-9EA7-601A16DA0A20}.Release|Any CPU.Build.0 = Release|Any CPU
+		{392D0651-AD51-4E0B-BD1C-279015620C4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{392D0651-AD51-4E0B-BD1C-279015620C4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{392D0651-AD51-4E0B-BD1C-279015620C4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{392D0651-AD51-4E0B-BD1C-279015620C4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6A7EF11-AFB7-4055-A38C-921EEA945070}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6A7EF11-AFB7-4055-A38C-921EEA945070}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6A7EF11-AFB7-4055-A38C-921EEA945070}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6A7EF11-AFB7-4055-A38C-921EEA945070}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{3562F2CA-F95B-4C4F-9EA7-601A16DA0A20} = {4EF8CFDD-78C7-4DEC-8C56-C826472F389F}
+		{392D0651-AD51-4E0B-BD1C-279015620C4B} = {4EF8CFDD-78C7-4DEC-8C56-C826472F389F}
+		{C6A7EF11-AFB7-4055-A38C-921EEA945070} = {4EF8CFDD-78C7-4DEC-8C56-C826472F389F}
 	EndGlobalSection
 EndGlobal
