@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static OffchainHelper.Helper.Helper;
 
 namespace OffchainHelper
 {
@@ -24,7 +25,7 @@ namespace OffchainHelper
         {
             try
             {
-                var dictionary = await Helper.ReadWordList();
+                var dictionary = await ReadWordList();
                 var settings = Settings.ReadAppSettings();
 
                 var wordList = textWordList.Text;
@@ -32,31 +33,20 @@ namespace OffchainHelper
                 splittedWordList = splittedWordList.Where(c => !string.IsNullOrEmpty(c)).ToArray();
                 if (splittedWordList.Count() != 12)
                 {
-                    MessageBox.Show("The count of words should be exactly 12");
+                    Alert("The count of words should be exactly 12");
                 }
                 else
                 {
-                    uint[] indexes = new uint[12];
-
-                    BigInteger binaryKey = new BigInteger(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 });
                     for (int i = 0; i < 12; i++)
                     {
                         if (!dictionary.ContainsKey(splittedWordList[i]))
                         {
-                            MessageBox.Show(string.Format("{0} is not present in the dictionary", splittedWordList[i]));
+                            Alert(string.Format("{0} is not present in the dictionary", splittedWordList[i]));
                             return;
-                        }
-                        else
-                        {
-                            indexes[i] = dictionary[splittedWordList[i]];
-                            binaryKey = binaryKey.ShiftLeft(11);
-                            binaryKey = binaryKey.Add(BigInteger.ValueOf(indexes[i]));
                         }
                     }
 
-                    binaryKey = binaryKey.ShiftRight(4);
-                    var nonZeroArray = binaryKey.ToByteArrayUnsigned();
-                    Key key = new Key((new byte[32 - nonZeroArray.Length]).Concat(nonZeroArray).ToArray());
+                    var key = GenerateKeyFrom12Words(splittedWordList, dictionary);
                     BitcoinSecret secret = new BitcoinSecret(key, settings.Network);
                     textGeneratedPrivateKey.Text = secret.ToWif();
 
@@ -66,8 +56,70 @@ namespace OffchainHelper
             }
             catch (Exception exp)
             {
-                MessageBox.Show(exp.ToString());
+                Alert(exp.ToString());
             }
+        }
+
+        private async void buttonSign_Click(object sender, EventArgs e)
+        {
+            var privKey = textPrivateKey.Text;
+            var unsignedText = textCommitmentToSign.Text;
+
+            var settings = Settings.ReadAppSettings();
+
+            if (string.IsNullOrEmpty(privKey))
+            {
+                Alert("Private key should have a value.");
+                return;
+            }
+            BitcoinSecret secret = null;
+            try
+            {
+                secret = Base58Data.GetFromBase58Data(privKey, settings.Network) as BitcoinSecret;
+                if (secret == null)
+                {
+                    Alert("Not a valid private key specified.");
+                    return;
+                }
+            }
+            catch (Exception exp)
+            {
+                Alert(exp.ToString());
+                return;
+            }
+
+            if (string.IsNullOrEmpty(unsignedText))
+            {
+                Alert("Unsigned commitment should have a value.");
+                return;
+            }
+
+            Transaction transaction = null;
+            try
+            {
+                transaction = new Transaction(unsignedText);
+            }
+            catch(Exception exp)
+            {
+                Alert(string.Format("Error in creating transaction: {0}", exp.ToString()));
+                return;
+            }
+
+            try
+            {
+                var outputTx = await Helper.Helper.SignTransactionWorker
+                    (new TransactionSignRequest { PrivateKey = privKey, TransactionToSign = unsignedText });
+                textSignedTransaction.Text = outputTx;
+            }
+            catch(Exception exp)
+            {
+                Alert(exp.ToString());
+            }
+        }
+
+        private void Alert(string text)
+        {
+            MessageBox.Show(text, "Alert", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
         }
     }
 }
