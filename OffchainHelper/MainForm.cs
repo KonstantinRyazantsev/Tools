@@ -1,5 +1,7 @@
 ﻿using NBitcoin;
 using NBitcoin.BouncyCastle.Math;
+using OffchainHelper.Entities;
+using OffchainHelper.Helper;
 using OffchainHelper.src;
 using System;
 using System.Collections.Generic;
@@ -19,6 +21,9 @@ namespace OffchainHelper
         public MainForm()
         {
             InitializeComponent();
+            toolTipCommitment.SetToolTip(textBoxFeeTransactionId, "Transaction id for the coin used for fee payment");
+            toolTipCommitment.SetToolTip(textBoxFeeOutputNumber, "Transaction output number for the coin used for fee payment.");
+            toolTipCommitment.SetToolTip(textFeePrivateKey, "The private key for the address holding the fee.");
         }
 
         private async void bGenerate_Click(object sender, EventArgs e)
@@ -64,8 +69,14 @@ namespace OffchainHelper
         {
             var privKey = textPrivateKey.Text;
             var unsignedText = textCommitmentToSign.Text;
+            var feeTxId = textBoxFeeTransactionId.Text;
+            var feeTxOutputNumber = textBoxFeeOutputNumber.Text;
+            var feePrivateKey = textFeePrivateKey.Text;
+            var sigHashType = SigHash.All | SigHash.AnyoneCanPay;
 
             var settings = Settings.ReadAppSettings();
+
+            textSignedTransaction.Text = string.Empty;
 
             if (string.IsNullOrEmpty(privKey))
             {
@@ -94,10 +105,44 @@ namespace OffchainHelper
                 return;
             }
 
-            Transaction transaction = null;
+            if(string.IsNullOrEmpty(feeTxId))
+            {
+                Alert("Transaction Id for fee should have a value.");
+                return;
+            }
+
+            if(string.IsNullOrEmpty(feeTxOutputNumber))
+            {
+                Alert("Transaction output number for fee should have a value.");
+                return;
+            }
+
+            if(string.IsNullOrEmpty(feePrivateKey))
+            {
+                Alert("The private key for the address holding the fee should have a value.");
+                return;
+            }
+
+            BitcoinSecret feeSecret = null;
             try
             {
-                transaction = new Transaction(unsignedText);
+                feeSecret = Base58Data.GetFromBase58Data(feePrivateKey, settings.Network) as BitcoinSecret;
+                if (feeSecret == null)
+                {
+                    Alert("Not a valid private key for fee specified.");
+                    return;
+                }
+            }
+            catch (Exception exp)
+            {
+                Alert(exp.ToString());
+                return;
+            }
+
+            Transaction commitmentTransaction = null;
+            try
+            {
+                commitmentTransaction = new Transaction(unsignedText);
             }
             catch(Exception exp)
             {
@@ -107,14 +152,43 @@ namespace OffchainHelper
 
             try
             {
-                var outputTx = await Helper.Helper.SignTransactionWorker
-                    (new TransactionSignRequest { PrivateKey = privKey, TransactionToSign = unsignedText });
+                commitmentTransaction = await AddFeeToTx(commitmentTransaction, feeTxId, feeTxOutputNumber);
+                var outputTx = commitmentTransaction.ToHex();
+
+                outputTx = await Helper.Helper.SignTransactionWorker
+                    (new TransactionSignRequest { PrivateKey = feePrivateKey, TransactionToSign = outputTx }, sigHashType);
+                outputTx = await Helper.Helper.SignTransactionWorker
+                    (new TransactionSignRequest { PrivateKey = privKey, TransactionToSign = outputTx }, sigHashType);
+
                 textSignedTransaction.Text = outputTx;
             }
             catch(Exception exp)
             {
                 Alert(exp.ToString());
             }
+        }
+
+        private async Task<Transaction> AddFeeToTx(Transaction tx, string feeTxId, string feeTxOutputNumber)
+        {
+            int feeOutptutNumber = Int32.Parse(feeTxOutputNumber);
+            return await AddFeeToTx(tx, feeTxId, feeOutptutNumber);
+        }
+
+        private async Task<Transaction> AddFeeToTx(Transaction tx, string feeTxId, int feeTxOutputNumber)
+        {
+            DaemonHelper daemonHelper = new DaemonHelper();
+            var settings = Settings.ReadAppSettings();
+
+            var txResut = await daemonHelper.GetTransactionHex(settings, feeTxId);
+            if(txResut.HasErrorOccurred)
+            {
+                throw new Exception(string.Format("An error has occurred while getting transaction with id {0} : {1}",
+                    feeTxId, txResut.Error));
+            }
+
+            tx.AddInput(new Transaction(txResut.TransactionHex), feeTxOutputNumber);
+
+            return tx;
         }
 
         private void Alert(string text)

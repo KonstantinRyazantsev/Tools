@@ -4,12 +4,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NBitcoin;
+using OffchainHelper.Entities;
 
 namespace OffchainHelper.Helper
 {
     public class DaemonHelper
     {
-        public async Task<Tuple<bool, string, string>> GetTransactionHex(Settings settings, string transactionId)
+        public async Task<GetTransactionHexResult> GetTransactionHex(Settings settings, string transactionId)
         {
             string transactionHex = "";
             bool errorOccured = false;
@@ -24,7 +25,7 @@ namespace OffchainHelper.Helper
                 errorOccured = true;
                 errorMessage = e.ToString();
             }
-            return new Tuple<bool, string, string>(errorOccured, errorMessage, transactionHex);
+            return new GetTransactionHexResult { HasErrorOccurred = errorOccured, Error = errorMessage, TransactionHex = transactionHex };
         }
     }
 }

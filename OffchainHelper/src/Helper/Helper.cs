@@ -1,5 +1,6 @@
 ﻿using NBitcoin;
 using NBitcoin.BouncyCastle.Math;
+using OffchainHelper.Entities;
 using OffchainHelper.src;
 using System;
 using System.Collections.Generic;
@@ -66,13 +67,13 @@ namespace OffchainHelper.Helper
             {
                 var txResponse = await daemonHelper.GetTransactionHex(settings, tx.Inputs[i].PrevOut.Hash.ToString());
 
-                if (txResponse.Item1)
+                if (txResponse.HasErrorOccurred)
                 {
                     throw new Exception(string.Format("Error while retrieving transaction {0}, error is: {1}",
-                        tx.Inputs[i].PrevOut.Hash.ToString(), txResponse.Item2));
+                        tx.Inputs[i].PrevOut.Hash.ToString(), txResponse.Error));
                 }
 
-                previousTransactions[i] = new Transaction(txResponse.Item3);
+                previousTransactions[i] = new Transaction(txResponse.TransactionHex);
 
                 builder.AddCoins(new Coin(previousTransactions[i], tx.Inputs[i].PrevOut.N));
             }

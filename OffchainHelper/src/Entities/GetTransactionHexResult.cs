@@ -4,17 +4,23 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace OffchainHelper
+namespace OffchainHelper.Entities
 {
-    public class TransactionSignRequest
+    public class GetTransactionHexResult
     {
-        public string TransactionToSign
+        public string TransactionHex
         {
             get;
             set;
         }
 
-        public string PrivateKey
+        public bool HasErrorOccurred
+        {
+            get;
+            set;
+        }
+
+        public string Error
         {
             get;
             set;
