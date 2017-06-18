@@ -52,7 +52,7 @@ namespace OffchainHelper.Helper
 
         public static async Task<string> SignTransactionWorker(TransactionSignRequest signRequest, SigHash sigHash = SigHash.All)
         {
-            DaemonHelper daemonHelper = new DaemonHelper();
+            BlockchainExplorerHelper daemonHelper = new BlockchainExplorerHelper();
             var settings = Settings.ReadAppSettings();
 
             Transaction tx = new Transaction(signRequest.TransactionToSign);
@@ -126,18 +126,6 @@ namespace OffchainHelper.Helper
             }
 
             return outputTx.ToHex();
-        }
-
-        public static LykkeExtenddedRPCClient GetRPCClient(Settings setting)
-        {
-            UriBuilder builder = new UriBuilder();
-            builder.Host = setting.RPCIP;
-            builder.Scheme = "http";
-            builder.Port = setting.RPCPort;
-            var uri = builder.Uri;
-
-            return new LykkeExtenddedRPCClient(new System.Net.NetworkCredential(setting.RPCUsername, setting.RPCPassword),
-                uri);
         }
     }
 }

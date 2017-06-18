@@ -176,10 +176,10 @@ namespace OffchainHelper
 
         private async Task<Transaction> AddFeeToTx(Transaction tx, string feeTxId, int feeTxOutputNumber)
         {
-            DaemonHelper daemonHelper = new DaemonHelper();
+            BlockchainExplorerHelper explorerHelper = new BlockchainExplorerHelper();
             var settings = Settings.ReadAppSettings();
 
-            var txResut = await daemonHelper.GetTransactionHex(settings, feeTxId);
+            var txResut = await explorerHelper.GetTransactionHex(settings, feeTxId);
             if(txResut.HasErrorOccurred)
             {
                 throw new Exception(string.Format("An error has occurred while getting transaction with id {0} : {1}",

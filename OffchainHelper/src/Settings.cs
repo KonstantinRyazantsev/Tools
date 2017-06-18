@@ -16,25 +16,7 @@ namespace OffchainHelper
             set;
         }
 
-        public string RPCIP
-        {
-            get;
-            set;
-        }
-
-        public int RPCPort
-        {
-            get;
-            set;
-        }
-
-        public string RPCUsername
-        {
-            get;
-            set;
-        }
-
-        public string RPCPassword
+        public string QBitNinjaUrl
         {
             get;
             set;
@@ -45,10 +27,7 @@ namespace OffchainHelper
 
             Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
             settings.Network = config.AppSettings.Settings["Network"].Value.ToLower().Equals("main") ? NBitcoin.Network.Main : NBitcoin.Network.TestNet;
-            settings.RPCIP = config.AppSettings.Settings["RPCIP"].Value;
-            settings.RPCPort = Int32.Parse(config.AppSettings.Settings["RPCPort"].Value);
-            settings.RPCUsername = config.AppSettings.Settings["RPCUsername"].Value;
-            settings.RPCPassword = config.AppSettings.Settings["RPCPassword"].Value;
+            settings.QBitNinjaUrl = config.AppSettings.Settings["QBitNinjaUrl"].Value;
             return settings;
         }
     }
